@@ -18,7 +18,7 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 
 public class SigninActivity  extends AsyncTask<String,Void,String>{
-
+	private String userNameQueryResult, queryResult ="";
    private TextView statusField,roleField;
    private Context context;
    private int byGetOrPost = 0; 
@@ -40,7 +40,7 @@ public class SigninActivity  extends AsyncTask<String,Void,String>{
             String username = (String)arg0[0];
             String password = (String)arg0[1];
             String link = "http://fapapp.bugs3.com/login.php?username="+username+"&password="+password;
-            URL url = new URL(link);
+          //  URL url = new URL(link);
             HttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet();
             request.setURI(new URI(link));
@@ -55,7 +55,27 @@ public class SigninActivity  extends AsyncTask<String,Void,String>{
               break;
             }
             in.close();
-            return sb.toString();
+            System.out.println("Get Method returned: " +sb.toString());
+            
+            userNameQueryResult = sb.toString();
+            
+            //Serversfree returns an object with an advertisement string appended to the result, 
+            //this loop looks for the appending first '<' which starts the added content and stops
+            //adding characters to the resultQuery string.
+            for (int i = 0; i < userNameQueryResult.length(); i++){
+            	if (userNameQueryResult.charAt(i) == '<')
+            		break;
+            	else 
+            		queryResult += userNameQueryResult.charAt(i);
+            	
+            }
+            
+            System.out.println("Parsed queryResult is now: " +queryResult);
+            
+            
+            
+            
+            return queryResult;
       }catch(Exception e){
          return new String("Exception: " + e.getMessage());
       }
@@ -86,6 +106,7 @@ public class SigninActivity  extends AsyncTask<String,Void,String>{
                sb.append(line);
                break;
             }
+            System.out.println("Post method returned: " + sb.toString());
             return sb.toString();
          }catch(Exception e){
             return new String("Exception: " + e.getMessage());
